@@ -20,6 +20,8 @@ module Patme
     private
 
     def get_values(header, params)
+      return {} if params.size == 0
+
       regex_str = params.map do |type, name|
         case type
         when :opt then "#{name}=(?<#{name}>.+)"
@@ -44,6 +46,8 @@ module Patme
     end
 
     def build_args(params, values)
+      return [] if params.size == 0
+
       params.map do |type, name|
         case type
         when :opt

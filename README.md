@@ -12,10 +12,12 @@ Patme module stores your instance methods internally and removes them from your 
 
 Currently this gem supports 3 types of arguments: specific, arbitrary and optional. In method definition `def foo(agr1, arg2=1, _arg3=false)` arg1 is an arbitrary argument, arg2 is specific and arg3 is optional.
 
+Patme supports class-based pattern matching. If method's specific argument is a `Class`, then it will be matched based on given argument's class using `is_a?`
+
 
 ## Limitations
 
-Only pattern-matching on instance methods is supported. Also you must use parentheses around method arguments.
+Only pattern matching on instance methods is supported. Also you must use parentheses around method arguments.
 
 
 ## Usage
@@ -45,7 +47,66 @@ factorial_calculator.calculate(-1) # => endless recursion, don't do so ^_^
 ```
 
 
-#### More complex example
+#### Class-based pattern matching
+
+```ruby
+require 'parme'
+
+SeriousError = Class.new(StandardError)
+RegularError = Class.new(StandardError)
+UnexpectedError = Class.new(StandardError)
+
+class ErrorHandler
+  include Patme::PatternMatching
+
+  def initialize(error)
+    @error = error
+  end
+
+  def handle
+    do_handle(@error)
+  end
+
+  # Will match if error.is_a?(SeriousError)
+  def do_handle(error=SeriousError)
+    puts "Alarm! SeriousError! Details: #{error.message}"
+  end
+
+  # Will match if error.is_a?(RegularError)
+  def do_handle(error=RegularError)
+    puts "Don't worry, just a RegularError: #{error.message}"
+  end
+
+  # Will match for all other StandardErrors
+  def do_handle(error=StandardError)
+    puts "Unexpected error: #{error.class}. Details: #{error.message}"
+  end
+end
+
+begin
+  raise SeriousError, 'boom!'
+rescue => error
+  ErrorHandler.new(error).handle
+end
+# => Alarm! SeriousError! Details: boom!
+
+begin
+  raise RegularError, 'we need to fix this'
+rescue => error
+  ErrorHandler.new(error).handle
+end
+# => Don't worry, just a RegularError: we need to fix this
+
+begin
+  raise UnexpectedError, 'something went completely wrong'
+rescue => error
+  ErrorHandler.new(error).handle
+end
+# => Unexpected error: UnexpectedError. Details: something went completely wrong
+```
+
+
+#### Full-featured example
 
 ```ruby
 require 'patme'

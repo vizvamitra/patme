@@ -19,7 +19,7 @@ class DummyPatternMatchable
     ['foo(true)', arg1]
   end
 
-  def foo()
+  def foo
     'foo()'
   end
 
@@ -76,7 +76,6 @@ RSpec.describe DummyPatternMatchable do
   it "correctly runs foo(any)" do
     expect( subject.foo(:any)  ).to eq ["foo(any)", :any]
     expect( subject.foo('any') ).to eq ["foo(any)", 'any']
-    expect( subject.foo({})    ).to eq ["foo(any)", {}]
   end
 
   it "correctly runs foo()" do

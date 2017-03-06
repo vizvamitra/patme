@@ -6,11 +6,11 @@ module Patme
       end
 
       def get_value(given)
-        @value
+        given
       end
 
       def ==(other)
-        @value == other
+        @value.is_a?(Class) ? other.is_a?(@value) : @value == other
       end
 
       def any?; false; end
