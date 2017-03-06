@@ -3,23 +3,23 @@ require 'spec_helper'
 class Factorial
   include Patme::PatternMatching
 
-  def of(n=0)
+  def calculate(n=0)
     1
   end
 
-  def of(n)
-    n * self.of(n-1)
+  def calculate(n)
+    n * calculate(n-1)
   end
 end
 
 describe Factorial do
   subject{ described_class.new }
 
-  it 'counts factorial of 0 correctly' do
-    expect( subject.of(0) ).to eq 1
+  it 'calculates factorial of 0 correctly' do
+    expect( subject.calculate(0) ).to eq 1
   end
 
-  it 'counts factorial of 5 correctly' do
-    expect( subject.of(5) ).to eq 120
+  it 'calculates factorial of 5 correctly' do
+    expect( subject.calculate(5) ).to eq 120
   end
 end

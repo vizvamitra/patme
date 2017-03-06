@@ -35,7 +35,7 @@ class Factorial
   end
 
   def calculate(n)
-    n * self.of(n-1)
+    n * calculate(n-1)
   end
 end
 
