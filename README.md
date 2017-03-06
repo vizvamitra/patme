@@ -4,7 +4,7 @@
 
 This gem is my experiment on elixir-style pattern matching in ruby.
 
-The implementation is nither production-ready, nor complete. It is just a proof of concept.
+The implementation is neither production-ready, nor complete. It is just a proof of concept.
 
 ## Info
 
@@ -20,7 +20,32 @@ Only pattern-matching on instance methods is supported. Also you must use parent
 
 ## Usage
 
-#### Pattern matching example
+#### Recursion example
+
+```ruby
+require 'patme'
+
+class Factorial
+  include Patme::PatternMatching
+
+  def calculate(n=0)
+    1
+  end
+
+  def calculate(n)
+    n * self.of(n-1)
+  end
+end
+
+factorial_calculator = Factorial.new
+
+factorial_calculator.calculate(0) # => 1
+factorial_calculator.calculate(5) # => 120
+factorial_calculator.calculate(-1) # => endless recursion, don't do so ^_^
+```
+
+
+#### More complex example
 
 ```ruby
 require 'patme'
@@ -68,7 +93,7 @@ class MyClass
 
 
   def baz(arg1='test')
-    "runned bar('test') with #{arg1}"
+    "runned baz('test') with #{arg1}"
   end
 end
 
@@ -76,41 +101,16 @@ my_obj = MyClass.new
 
 my_obj.foo('test') # => "runned foo('test') with test"
 my_obj.foo('other') # => "runned foo('other') with other"
-my_obj.foo({a: 1, b: 2}) # => "runned foo({a: 1, b: 2}) with {a: 1, b: 2}"
+my_obj.foo({a: 1, b: 2}) # => "runned foo({a: 1, b: 2}) with {:a => 1, :b => 2}"
 my_obj.foo(1, 'test') # => "runned foo(any, 'test') with [1, test]"
 my_obj.foo(1) # => "runned foo(any, optional) with [1, default]"
 my_obj.foo(1, 'some') # => "runned foo(any, optional) with [1, some]"
-my_obj.foo(1, 'some') # => "runned foo(any, optional) with [1, some]"
 
 my_obj.bar(1) # => "runned bar(any) with 1"
-my_obj.bar('never') # => "runned bar(any) with 1"
+my_obj.bar('never') # => "runned bar(any) with never"
 
 my_obj.baz('test') # => "runned baz('test') with test"
-my_obj.bar(1) # => NoMethodError
-```
-
-#### Recursion example
-
-```ruby
-require 'patme'
-
-class Factorial
-  include Patme::PatternMatch
-
-  def calculate(n=0)
-    1
-  end
-
-  def calculate(n)
-    n * self.of(n-1)
-  end
-end
-
-factorial_calculator = Factorial.new
-
-factorial_calculator.calculate(0) # => 1
-factorial_calculator.calculate(5) # => 120
-factorial_calculator.calculate(-1) # => endless recursion, don't do so ^_^
+my_obj.baz(1) # => NoMethodError
 ```
 
 
