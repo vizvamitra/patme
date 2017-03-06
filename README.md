@@ -1,5 +1,7 @@
 # Patme
 
+[![Build Status](https://travis-ci.org/vizvamitra/patme.svg?branch=master)](https://travis-ci.org/vizvamitra/patme)
+
 This gem is my experiment on elixir-style pattern matching in ruby.
 
 The implementation is nither production-ready, nor complete. It is just a proof of concept.
