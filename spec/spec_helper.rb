@@ -1,4 +1,5 @@
 require "bundler/setup"
+require 'pry'
 require "patme"
 
 RSpec.configure do |config|

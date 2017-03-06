@@ -1,5 +1,6 @@
-require "patme/version"
+Dir[File.join(__dir__, "/patme/arguments/*")].each{|path| require path}
+Dir[File.join(__dir__, "/patme/*.rb")].each{|path| require path}
 
 module Patme
-  # Your code goes here...
+
 end
