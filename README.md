@@ -50,7 +50,7 @@ factorial_calculator.calculate(-1) # => endless recursion, don't do so ^_^
 #### Class-based pattern matching
 
 ```ruby
-require 'parme'
+require 'patme'
 
 SeriousError = Class.new(StandardError)
 RegularError = Class.new(StandardError)
