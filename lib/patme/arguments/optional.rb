@@ -7,7 +7,7 @@ module Patme
 
       # *given is an array to distinguish cases with no value or nil
       def get_value(*given)
-        given.size == 1 ? given[0] : @default_value
+        given.size == 1 ? given.first : @default_value
       end
 
       def ==(other)

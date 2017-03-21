@@ -11,47 +11,45 @@ module Patme
     end
 
     def build
-      values = get_values(method_header, method_params)
-      args = build_args(method_params, values)
-
-      Patme::Implementation.new(@method_obj, args)
+      Patme::Implementation.new(@method_obj, build_args)
     end
 
     private
 
-    def get_values(header, params)
-      return {} if params.size == 0
+    def get_values
+      return {} if method_params.empty?
+      return @_values if @_values
 
-      regex_str = params.map do |type, name|
+      regex_str = method_params.map do |type, name|
         case type
         when :opt then "#{name}=(?<#{name}>.+)"
         when :req
-          name =~ /^_/ ? "#{name}=(?<#{name}>.+)" : "#{name}"
+          name[0] == '_' ? "#{name}=(?<#{name}>.+)" : "#{name}"
         end
       end.join(', ') + '\s*\)\s*$'
 
-      match_data = header.match( Regexp.new(regex_str) )
-      match_data.names.map do |name|
+      match_data = method_header.match( Regexp.new(regex_str) )
+      @_values = match_data.names.map do |name|
         [name.to_sym, eval(match_data[name.to_s])]
       end.to_h
     end
 
     def method_header
       path, line = @method_obj.source_location
-      File.read(path).split("\n")[line - 1]
+      File.read(path).lines.take(line).last
     end
 
     def method_params
       @method_obj.parameters
     end
 
-    def build_args(params, values)
-      return [] if params.size == 0
+    def build_args
+      return [] if method_params.empty?
 
-      params.map do |type, name|
+      method_params.map do |type, name|
         case type
         when :opt
-          (name =~ /^_/ ? Arguments::Optional : Arguments::Specific).new(values[name])
+          (name[0] == '_' ? Arguments::Optional : Arguments::Specific).new(get_values[name])
         when :req then Arguments::Arbitrary.new
         end
       end
