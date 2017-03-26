@@ -2,9 +2,8 @@
 
 [![Build Status](https://travis-ci.org/vizvamitra/patme.svg?branch=master)](https://travis-ci.org/vizvamitra/patme)
 
-This gem is my experiment on elixir-style pattern matching in ruby.
+This gem is my experiment on elixir-style pattern matching in ruby. In it's current state it is no more than a proof of concept and I suggest not to use it in production.
 
-The implementation is neither production-ready, nor complete. It is just a proof of concept.
 
 ## Info
 
@@ -13,11 +12,6 @@ Patme module stores your instance methods internally and removes them from your 
 Currently this gem supports 3 types of arguments: specific, arbitrary and optional. In method definition `def foo(agr1, arg2=1, _arg3=false)` arg1 is an arbitrary argument, arg2 is specific and arg3 is optional.
 
 Patme supports class-based pattern matching. If method's specific argument is a `Class`, then it will be matched based on given argument's class using `is_a?`
-
-
-## Limitations
-
-Only pattern matching on instance methods is supported. Also you must use parentheses around method arguments.
 
 
 ## Usage
@@ -175,11 +169,54 @@ my_obj.baz(1) # => NoMethodError
 ```
 
 
+## Limitations
+
+Pattern-matching in it's current implementation is slow and the more implementations of a method you have the slower it would be:
+
+```ruby
+require 'spec_helper'
+require 'benchmark'
+
+class BenchmarkDummy
+  def no_pm(arg1, arg2)
+    ['no_pm', arg1, arg2]
+  end
+
+  include Patme::PatternMatching
+
+  def pm(arg1='test', arg2='lol')
+    ['specific', arg1, arg2]
+  end
+
+  def pm(arg1, arg2)
+    ['arbitrary', arg1, arg2]
+  end
+end
+
+n = 1_000_000
+foo = BenchmarkDummy.new
+
+Benchmark.bm do |x|
+  x.report('no_pm       '){ n.times{foo.no_pm('test', 'lol')} }
+  x.report('pm_specific '){ n.times{foo.pm('test', 'lol')} }
+  x.report('pm_arbitrary'){ n.times{foo.pm('some', 'arg')} }
+end
+
+#                   user     system      total        real
+# no_pm         0.200000   0.000000   0.200000 (  0.205747)
+# pm_specific   3.570000   0.000000   3.570000 (  3.574598)
+# pm_arbitrary  5.210000   0.000000   5.210000 (  5.210410)
+```
+
+Only pattern matching on instance methods is supported.
+
+Including Patme::PatternMatching into your class makes all of the methods below the `include` statement be pattern-matched (I think I'll fix this issue later).
+
+
 ## Todos
 
-1. Add support for keyword arguments (`key:` - arbitrary, `key: value` - specific, `_key: value` - optional)
-2. Add support for class methods
-3. Add something to tell Patme not to pattern-match on given methods
+1. Add support for class methods
+2. Add something to tell Patme not to pattern-match on every method
 
     ```ruby
     # Possible example
@@ -190,11 +227,21 @@ my_obj.baz(1) # => NoMethodError
       def tell(name) # ::pm_off
         puts "Hello, #{name}"
       end
+
+      # Or maybe it'll be better to use an annotation
+      pm_start
+      def yell(name="Boss", message)
+        raise CommonSenceError, "don't yell on your boss"
+      end
+
+      def yell(name, message)
+        puts message.upcase
+      end
+      pm_stop
     end
     ```
 
-4. Add support for method headers without parentheses
-5. Add watchers
+3. Add guards
 
     ```ruby
     # Possible example
@@ -215,7 +262,8 @@ my_obj.baz(1) # => NoMethodError
     end
     ```
 
-6. Your suggestions?
+4. Add support for keyword arguments (`key:` - arbitrary, `key: value` - specific, `_key: value` - optional)
+5. Your suggestions?
 
 
 ## Contributing
