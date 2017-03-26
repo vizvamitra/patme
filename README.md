@@ -8,7 +8,7 @@ The implementation is neither production-ready, nor complete. It is just a proof
 
 ## Info
 
-Patme module stores your instance methods internally and removes them from your class. Then, when method is called, it tries to pattern-match given arguments with existing method implementations. If implementation was found, it executes it, othervise you'll get a NoMethodError.
+Patme module stores your instance methods internally and removes them from your class. Then, when method is called, it tries to pattern-match given arguments with existing method implementations. If implementation was found, it executes it, otherwise you'll get a NoMethodError.
 
 Currently this gem supports 3 types of arguments: specific, arbitrary and optional. In method definition `def foo(agr1, arg2=1, _arg3=false)` arg1 is an arbitrary argument, arg2 is specific and arg3 is optional.
 
@@ -116,61 +116,61 @@ class MyClass
 
   # This method will match only when arg1  ='test'
   def foo(arg1='test')
-    "runned foo('test') with #{arg1}"
+    "ran foo('test') with #{arg1}"
   end
 
   # Will match only when arg1  ='other'
   def foo(arg1='other')
-    "runned foo('other') with #{arg1}"
+    "ran foo('other') with #{arg1}"
   end
 
   # You can also use other basic types
   def foo(arg1={a: 1, b: 2})
-    "runned foo({a: 1, b: 2}) with #{arg1}"
+    "ran foo({a: 1, b: 2}) with #{arg1}"
   end
 
   # Will match when arg2 = 'test' no matter what arg1 is
   def foo(arg1, arg2='test')
-    "runned foo(any, 'test') with [#{arg1}, #{arg2}]"
+    "ran foo(any, 'test') with [#{arg1}, #{arg2}]"
   end
 
   # Will match with any arg1 and both with and without arg2
   # if arg2 is not supplied, method will receive arg2 = 'default'
   def foo(arg1, _arg2="default")
-    "runned foo(any, optional) with [#{arg1}, #{_arg2}]"
+    "ran foo(any, optional) with [#{arg1}, #{_arg2}]"
   end
 
 
   # Will match with any one argument.
   def bar(arg1)
-    "runned bar(any) with #{arg1}"
+    "ran bar(any) with #{arg1}"
   end
 
   # Won't ever match because previous definition of bar will be pattern-matched
   # before this one
   def bar(arg1='never')
-    "runned bar('never') with #{arg1}"
+    "ran bar('never') with #{arg1}"
   end
 
 
   def baz(arg1='test')
-    "runned baz('test') with #{arg1}"
+    "ran baz('test') with #{arg1}"
   end
 end
 
 my_obj = MyClass.new
 
-my_obj.foo('test') # => "runned foo('test') with test"
-my_obj.foo('other') # => "runned foo('other') with other"
-my_obj.foo({a: 1, b: 2}) # => "runned foo({a: 1, b: 2}) with {:a => 1, :b => 2}"
-my_obj.foo(1, 'test') # => "runned foo(any, 'test') with [1, test]"
-my_obj.foo(1) # => "runned foo(any, optional) with [1, default]"
-my_obj.foo(1, 'some') # => "runned foo(any, optional) with [1, some]"
+my_obj.foo('test') # => "ran foo('test') with test"
+my_obj.foo('other') # => "ran foo('other') with other"
+my_obj.foo({a: 1, b: 2}) # => "ran foo({a: 1, b: 2}) with {:a => 1, :b => 2}"
+my_obj.foo(1, 'test') # => "ran foo(any, 'test') with [1, test]"
+my_obj.foo(1) # => "ran foo(any, optional) with [1, default]"
+my_obj.foo(1, 'some') # => "ran foo(any, optional) with [1, some]"
 
-my_obj.bar(1) # => "runned bar(any) with 1"
-my_obj.bar('never') # => "runned bar(any) with never"
+my_obj.bar(1) # => "ran bar(any) with 1"
+my_obj.bar('never') # => "ran bar(any) with never"
 
-my_obj.baz('test') # => "runned baz('test') with test"
+my_obj.baz('test') # => "ran baz('test') with test"
 my_obj.baz(1) # => NoMethodError
 ```
 
@@ -179,14 +179,14 @@ my_obj.baz(1) # => NoMethodError
 
 1. Add support for keyword arguments (`key:` - arbitrary, `key: value` - specific, `_key: value` - optional)
 2. Add support for class methods
-3. Add something to tell Parme not to pattern-match on given methods
+3. Add something to tell Patme not to pattern-match on given methods
 
     ```ruby
     # Possible example
     class Hello
-      include Parme::PatternMatching
+      include Patme::PatternMatching
 
-      # Comment after method header will tell Parme not to touch this method
+      # Comment after method header will tell Patme not to touch this method
       def tell(name) # ::pm_off
         puts "Hello, #{name}"
       end
@@ -226,4 +226,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/vizvam
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
